@@ -14,7 +14,7 @@ data_file = 'data.json' # file to store data
 def signal_handler(sig, frame):
     save_data()
     print('exiting and saving data...')
-    time.sleep(2)
+    time.sleep(1.5)
     sys.exit(0)
 
 # saving data in json format to data_file
@@ -64,7 +64,7 @@ def main_menu():
         else:
             save_data()
             print('exiting program...')
-            time.sleep(2)
+            time.sleep(1.5)
             break
 
 ###################
@@ -136,41 +136,67 @@ def edit_task():
     if not to_do_list:
         print('no tasks available.')
         return
-    task_choices = [{'name': task} for task in to_do_list]
-    questions = [
-        {
-            'type': 'list',
-            'name': 'task_to_edit',
-            'message': 'Select task to edit: ',
-            'choices': task_choices
-        },
-        {
-            'type': 'input',
-            'name': 'new_task_name',
-            'message': 'Enter new task name: '
-        }
-    ]
-    answer = prompt(questions)
-    task_index = to_do_list.index(answer['task_to_edit'])
-    to_do_list[task_index] = answer['new_task_name']
-    print(f"task updated to '{answer['new_task_name']}'.")
+    while True:
+        task_choices = [{'name': task} for task in to_do_list]
+        questions = [
+            {
+                'type': 'list',
+                'name': 'task_to_edit',
+                'message': 'Select task to edit: ',
+                'choices': task_choices
+            },
+            {
+                'type': 'input',
+                'name': 'new_task_name',
+                'message': 'Enter new task name: '
+            }
+        ]
+        answer = prompt(questions)
+        task_index = to_do_list.index(answer['task_to_edit'])
+        to_do_list[task_index] = answer['new_task_name']
+        print(f"task updated to '{answer['new_task_name']}'.")
+
+        continue_questions = [
+            {
+                'type': 'confirm',
+                'name': 'continue_edit_task',
+                'message': 'Do you want to edit another task?',
+                'default': False
+            }
+        ]
+        continue_answer = prompt(continue_questions)
+        if not continue_answer['continue_edit_task']:
+            break
 
 def delete_task():
-    if not to_do_list:
-        print('no tasks available.')
-        return
-    task_choices = [{'name': task} for task in to_do_list]
-    questions = [
-        {
-            'type': 'list',
-            'name': 'task_to_delete',
-            'message': 'Select task to delete: ',
-            'choices': task_choices
-        }
-    ]
-    answer = prompt(questions)
-    to_do_list.remove(answer['task_to_delete'])
-    print(f"Task '{answer['task_to_delete']}' has been deleted.")
+    while True:
+        if not to_do_list:
+            print('no tasks available.')
+            return
+        task_choices = [{'name': task} for task in to_do_list]
+        questions = [
+            {
+                'type': 'list',
+                'name': 'task_to_delete',
+                'message': 'Select task to delete: ',
+                'choices': task_choices
+            }
+        ]
+        answer = prompt(questions)
+        to_do_list.remove(answer['task_to_delete'])
+        print(f"Task '{answer['task_to_delete']}' has been deleted.")
+
+        continue_questions = [
+            {
+                'type': 'confirm',
+                'name': 'continue_delete_task',
+                'message': 'Do you want to delete another task?',
+                'default': False
+            }
+        ]
+        continue_answer = prompt(continue_questions)
+        if not continue_answer['continue_delete_task']:
+            break
 
 
 ###################
@@ -187,7 +213,7 @@ def manage_study_planner():
                 'Schedule study session',
                 'View study session',
                 'Edit study session',
-                'Delete Study session',
+                'Delete study session',
                 'Back to main menu'
             ]
         }
@@ -215,85 +241,119 @@ def view_study_plan():
     print(schedule)
 
 def schedule_study_session():
-    questions = [
-        {
-            'type': 'input',
-            'name': 'session_day',
-            'message': 'Enter session day: '
-        },
-        {
-            'type': 'input',
-            'name': 'session_time',
-            'message': 'Enter session time: '
-        },
-        {
-            'type': 'input',
-            'name': 'session_name',
-            'message': 'Enter study session: '
-        }
-    ]
-    answer = prompt(questions)
-    study_plan.append(
-        {
-            'day': answer['session_day'],
-            'time': answer['session_time'],
-            'name': answer['session_name']
-        }
-    )
-    print(f"Study session '{answer['session_name']}' scheduled on {answer['session_day']} at {answer['session_time']}")
+    while True:
+        questions = [
+            {
+                'type': 'input',
+                'name': 'session_day',
+                'message': 'Enter session day: '
+            },
+            {
+                'type': 'input',
+                'name': 'session_time',
+                'message': 'Enter session time: '
+            },
+            {
+                'type': 'input',
+                'name': 'session_name',
+                'message': 'Enter study session: '
+            }
+        ]
+        answer = prompt(questions)
+        study_plan.append(
+            {
+                'day': answer['session_day'],
+                'time': answer['session_time'],
+                'name': answer['session_name']
+            }
+        )
+        print(f"Study session '{answer['session_name']}' scheduled on {answer['session_day']} at {answer['session_time']}")
+
+        continue_questions = [
+            {
+                'type': 'confirm',
+                'name': 'continue_add_session',
+                'message': 'Do you want to add another session?',
+                'default': False
+            }
+        ]
+        continue_answer = prompt(continue_questions)
+        if not continue_answer['continue_add_session']:
+            break
 
 def edit_study_plan():
     if not study_plan:
         print('no study sessions available')
         return
-    session_choices = [
-        {
-            'name': f"{session['name']} ({session['day']} at {session['time']})",
-            'value': session
-        }
-        for session in study_plan
-    ]
-    questions = [
-        {
-            'type': 'list',
-            'name': 'session_to_edit',
-            'message': 'Select study session to edit: ',
-            'choices': session_choices
-        },
-        {
-            'type': 'input',
-            'name': 'new_session_name',
-            'message': 'Enter new session name: '
-        },
-        {
-            'type': 'input',
-            'name': 'new_session_day',
-            'message': 'Enter new session day: '
-        },
-        {
-            'type': 'input',
-            'name': 'new_session_time',
-            'message': 'Enter new session time: '
-        }
-    ]
-    answer = prompt(questions)
-    session_index = next(
-        (idx for idx, session in enumerate(study_plan) if session['name'] == answer['session_to_edit']),
-        None
-    )
-    if session_index is not None:
-        study_plan[session_index] == {
-            'day': answer['new_session_day'],
-            'time': answer['new_session_time'],
-            'name': answer['new_session_name']
-        }
-        print(f"Study session updated to '{answer['new_session_name']}' on {answer['new_session_day']} at {answer['new_session_time']}.")
+    while True:
+        session_choices_display = [
+            {
+                'name': f"{session['name']} ({session['day']} at {session['time']})",
+                'value': session
+            }
+            for session in study_plan
+        ]
+        questions = [
+            {
+                'type': 'list',
+                'name': 'session_to_edit',
+                'message': 'Select study session to edit: ',
+                'choices': session_choices_display
+            },
+            {
+                'type': 'input',
+                'name': 'new_session_name',
+                'message': 'Enter new session name: '
+            },
+            {
+                'type': 'input',
+                'name': 'new_session_day',
+                'message': 'Enter new session day: '
+            },
+            {
+                'type': 'input',
+                'name': 'new_session_time',
+                'message': 'Enter new session time: '
+            }
+        ]
+        answer = prompt(questions)
+        print(answer['session_to_edit'])
+        session_index = next(
+            (
+                idx
+                for idx, session in enumerate(study_plan)
+                if session['name'] == answer['session_to_edit']['name']
+                   and session['day'] == answer['session_to_edit']['day']
+                   and session['time'] == answer['session_to_edit']['time']
+            ),
+            None
+        )
+        print(session_index)
+        if session_index is not None:
+            study_plan[session_index] == {
+                'day': answer['new_session_day'],
+                'time': answer['new_session_time'],
+                'name': answer['new_session_name']
+            }
+            print(f"Study session updated to '{answer['new_session_name']}' on {answer['new_session_day']} at {answer['new_session_time']}.")
+
+        continue_questions = [
+            {
+                'type': 'confirm',
+                'name': 'continue_edit_session',
+                'message': 'Do you want to edit another session?',
+                'default': False
+            }
+        ]
+        continue_answer = prompt(continue_questions)
+        if not continue_answer['continue_edit_session']:
+            break
 
 def delete_study_session():
-    if not study_plan:
-        print('no study sessions available.')
-        return
     while True:
+        if not study_plan:
+            print('no study sessions available.')
+            return
         session_choices = [
             {
                 'name': f"{session['name']} ({session['day']} at {session['time']})",
