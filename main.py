@@ -237,6 +237,9 @@ def view_study_plan():
         return
     schedule = pd.DataFrame(study_plan)
     schedule = schedule.pivot(index='time', columns='day', values='name')
+    days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    schedule = schedule.reindex(columns=days_order)
+    schedule = schedule.sort_index()
     schedule = schedule.fillna('')
     print(schedule)
 
@@ -317,7 +320,6 @@ def edit_study_plan():
             }
         ]
         answer = prompt(questions)
-        print(answer['session_to_edit'])
         session_index = next(
             (
                 idx
@@ -328,9 +330,8 @@ def edit_study_plan():
             ),
             None
         )
-        print(session_index)
         if session_index is not None:
-            study_plan[session_index] == {
+            study_plan[session_index] = {
                 'day': answer['new_session_day'],
                 'time': answer['new_session_time'],
                 'name': answer['new_session_name']
